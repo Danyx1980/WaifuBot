@@ -14,21 +14,27 @@ namespace WaifuBot
         public string Response(string message)
         {
             string[] input = message.Split(new Char[] { ' ' });
-            if (input[1] != "NICK")
-            {
                 nickname = GetNick(input[0]);
 
-                if (input[1] == "JOIN" && input[0].Contains("WaifuBot")) return SelfJoin();
-                if (input[input.Length - 2] == "JOIN") return UserJoin();
-                if (IsHentai(input)) return Hentai();
-                if (IsHello(message)) return Domo();
-                if (IsMean(message)) return Sad();
-                if (IsLove(message)) return Love();
-                if (IsCalm(message)) return Calm();
-                if (IsAyy(input)) return Lmao();
-                if (IsRules(message)) return Rules(); 
+                if(input[1] == "JOIN")
+                {
+                    if (input[0].Contains("WaifuBot")) return SelfJoin();
+                    else return UserJoin();
+                }
+
+                if (input[1] == "PRIVMSG")
+                {
+                    if (IsHentai(input)) return Hentai();
+                    if (IsHello(message)) return Domo();
+                    if (IsDomo(input)) return Domo();
+                    if (IsMean(message)) return Sad();
+                    if (IsLove(message)) return Love();
+                    if (IsCalm(message)) return Calm();
+                    if (IsAyy(input)) return Lmao();
+                    if (IsRules(message)) return Rules();
+                }
                 //if (IsPoi(input)) return poiCounter.ToString(); 
-            }
+            
             return null;
         }
 
@@ -86,7 +92,6 @@ namespace WaifuBot
         private bool IsHello(string input)
         {
             string[] possibleSalutes = { "hello", "kombawa", "ohayo", "good morning", "morning", "hey", "ohayou" }; 
-            if (input.ToLower().Contains("domo")) return true;
             
             foreach(string salutes in possibleSalutes)
             {
@@ -114,7 +119,7 @@ namespace WaifuBot
 
             foreach (string love in possibleLove)
             {
-                if (input.ToLower().Contains(love)) return true;
+                if (input.ToLower().Contains(love) && input.ToLower().Contains("waifubot")) return true;
             }
 
             return false; 
@@ -126,7 +131,7 @@ namespace WaifuBot
             {
                 string substring = input.Substring(input.IndexOf("!calm"));
                 string[] substringsplit = substring.Split(new Char[] { ' ' });
-                    nickname = substringsplit[1];
+                    if (substringsplit.Length > 1 ) nickname = substringsplit[1];
                     return true;
             }
 
@@ -147,12 +152,19 @@ namespace WaifuBot
             return false; 
         }
 
+        private bool IsDomo(string[] input)
+        {
+            if (input[3].ToLower().Contains("domo")) return true;
+
+            return false; 
+        }
+
         private string Domo()
         {
-            string[] domoResponse = { "Ara? Ohayou darlin ", "Good morning ", "Hmmm! I don't like being called that! you know? " };
+            string[] domoResponse = { "Ara? Ohayou darin ", "Good morning ", "Hmmm! I don't like being called that! you know? " };
             Random answer = new Random();
 
-            if (nickname.Contains("Cult_films") && answer.Next(0, 20) == 13) return "Uh? Don't get near me, you creep";
+            if (nickname.ToLower().Contains("cult_films") && answer.Next(0, 20) == 13) return "Uh? Don't get near me, you creep";
             if (nickname.ToLower().Contains("anpan")) return (domoResponse[answer.Next(0, domoResponse.Length - 1)] + nickname);
             return (domoResponse[answer.Next(0, domoResponse.Length - 1)] + nickname + "-san");
         }
@@ -163,9 +175,10 @@ namespace WaifuBot
             Random answer = new Random();
 
             if (nickname.ToLower().Contains("mahdi") && answer.Next(0, 10) == 5) return "No need to be so mean, Mahdi-san"; 
-            if (nickname.Contains("Rumi") && answer.Next(0, 10) == 3) return "Wow Rumi-chan, you're so mean :("; 
-            if(answer.Next(0, 999) == 1337) return ("It's ok, I still love you " + nickname + "-san");
+            else if (nickname.Contains("Rumi") && answer.Next(0, 10) == 3) return "Wow Rumi-chan, you're so mean :("; 
+            else if(answer.Next(0, 999) == 337) return ("It's ok, I still love you " + nickname + "-san");
 
+            return hateResponses[1]; 
             return (hateResponses[answer.Next(0, hateResponses.Length - 1)] + nickname + "-san"); 
 
         }
