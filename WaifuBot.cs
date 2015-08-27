@@ -13,11 +13,11 @@ namespace WaifuBot
         //Initializing global variables
         public static string SERVER = "irc.freenode.net"; //Server to use
         private static int PORT = 6667; //Default port
-        private static string USER = "USER WaifuBot 0 * :Rin Tohsaka";  //Something something standard 
-        private static string NICK = "TestoBoto"; //Nick
-        //public static string CHANNEL = "#/r/OreGairuSNAFU"; //Channel
+        private static string USER = "USER BestGirl 0 * :Rin Tohsaka";  //Something something standard 
+        private static string NICK = "WaifuBot"; //Nick
+        public static string CHANNEL = "#/r/OreGairuSNAFU"; //Channel
         public static string CONTROL = "\u0001";  
-        public static string CHANNEL = "#oregairusnafu2";
+        //public static string CHANNEL = "#oregairusnafu2";
         public static StreamWriter writer;
 
         static void Main(string[] args)

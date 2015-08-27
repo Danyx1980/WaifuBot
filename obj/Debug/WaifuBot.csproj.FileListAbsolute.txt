@@ -1,7 +1,6 @@
 c:\users\daniel\documents\visual studio 2013\Projects\WaifuBot\WaifuBot\bin\Debug\WaifuBot.exe.config
 c:\users\daniel\documents\visual studio 2013\Projects\WaifuBot\WaifuBot\bin\Debug\WaifuBot.exe
 c:\users\daniel\documents\visual studio 2013\Projects\WaifuBot\WaifuBot\bin\Debug\WaifuBot.pdb
-c:\users\daniel\documents\visual studio 2013\Projects\WaifuBot\WaifuBot\obj\Debug\WaifuBot.csprojResolveAssemblyReference.cache
 c:\users\daniel\documents\visual studio 2013\Projects\WaifuBot\WaifuBot\obj\Debug\WaifuBot.exe
 c:\users\daniel\documents\visual studio 2013\Projects\WaifuBot\WaifuBot\obj\Debug\WaifuBot.pdb
 C:\Users\Daniel\documents\visual studio 2013\Projects\WaifuBot\WaifuBot\bin\Debug\MongoDB.Bson.dll

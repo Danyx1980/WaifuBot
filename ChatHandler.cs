@@ -182,7 +182,6 @@ namespace WaifuBot
             else if (nickname.Contains("Rumi") && answer.Next(0, 10) == 3) return "Wow Rumi-chan, you're so mean :("; 
             else if(answer.Next(0, 999) == 337) return ("It's ok, I still love you " + nickname + "-san");
 
-            return hateResponses[1]; 
             return (hateResponses[answer.Next(0, hateResponses.Length - 1)] + nickname + "-san"); 
 
         }
@@ -235,7 +234,7 @@ namespace WaifuBot
             {
                 dbinterface.insertEvent(eventInfo);
                 if(eventInfo.Count == 4)
-                    return confirmation[answer.Next(0, confirmation.Length - 1)] + string.Format("\n{0} is scheduled for {1} at {2}. An additional note is attached, it says: {3}", eventInfo[0][1], eventInfo[0][2], eventInfo[0][3], eventInfo[0][4]);  
+                    return confirmation[answer.Next(0, confirmation.Length - 1)] + string.Format("\n{0} is scheduled for {1} at {2}. An additional note is attached, it says: {3}", eventInfo[0], eventInfo[1], eventInfo[2], eventInfo[3]);  
                 else
                     return confirmation[answer.Next(0, confirmation.Length - 1)] + string.Format("\n{0} is now scheduled for {1} at {2}. ", eventInfo[0], eventInfo[1], eventInfo[2]);  
             }
@@ -253,10 +252,24 @@ namespace WaifuBot
             try
             {
                 List<BsonDocument> eventInfo = dbinterface.getEvent(CommandHandler(input)[0]).Result;
-                if(eventInfo.Count == 4) 
-                    return string.Format("{0} is scheduled for {1} at {2}. An additional note is attached, it says: {3}", eventInfo[0][1], eventInfo[0][2], eventInfo[0][3], eventInfo[0][4]); 
+                //List<string> fullAnswer = new List<string>;   
+                //string answer;
+
+                //for (int i = 0; i < eventInfo.Count; i++ )
+                //{
+                //    if(eventInfo[i].Count() == 3) 
+                //        fullAnswer.Add(string.Format("{0} is scheduled for {1} at {2}.\n", eventInfo[i][1], eventInfo[i][2], eventInfo[i][3])); 
+                
+                //    if(eventInfo[i].Count() == 4)   
+                //        fullAnswer.Add(string.Format("{0} is scheduled for {1} at {2}. An additional note is attached, it says: {3}.\n", eventInfo[0][1], eventInfo[0][2], eventInfo[0][3], eventInfo[0][4])); 
+                //}
+
+                if(eventInfo[0].Count() == 4)
+                    return string.Format("{0} is scheduled for {1} at {2}.\n", eventInfo[0][1], eventInfo[0][2], eventInfo[0][3]); 
+
                 else
-                    return string.Format("{0} is scheduled for {1} at {2}.", eventInfo[0][1], eventInfo[0][2], eventInfo[0][3]); 
+                    return string.Format("{0} is scheduled for {1} at {2}. An additional note is attached, it says: {3}.\n", eventInfo[0][1], eventInfo[0][2], eventInfo[0][3], eventInfo[0][4]); 
+                
             }
 
             catch (Exception e)
