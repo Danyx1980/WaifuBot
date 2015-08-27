@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MongoDB.Bson;
+using MongoDB.Driver; 
 
 namespace WaifuBot
 {
     class ChatHandler
     {
-        public int poiCounter = 0;
-        public string nickname;
+        string nickname;
+        private DBInterface dbinterface = new DBInterface(); 
 
         public string Response(string message)
         {
@@ -25,13 +27,15 @@ namespace WaifuBot
                 if (input[1] == "PRIVMSG")
                 {
                     if (IsHentai(input)) return Hentai();
+                    if (IsMean(message)) return Sad();
                     if (IsHello(message)) return Domo();
                     if (IsDomo(input)) return Domo();
-                    if (IsMean(message)) return Sad();
                     if (IsLove(message)) return Love();
                     if (IsCalm(message)) return Calm();
                     if (IsAyy(input)) return Lmao();
                     if (IsRules(message)) return Rules();
+                    if (IsSchedule(input)) return Schedule(message);
+                    if (IsEvent(input)) return Event(message); 
                 }
                 //if (IsPoi(input)) return poiCounter.ToString(); 
             
@@ -63,20 +67,6 @@ namespace WaifuBot
             Random answer = new Random();
 
             return hentaiResponse[answer.Next(0, hentaiResponse.Length)];
-        }
-
-        private bool IsPoi(string[] input)
-        {
-            foreach (string substring in input)
-            {
-                if (substring.ToLower().Contains("poi"))
-                {
-                    poiCounter++;
-                    return true;
-                }
-            }
-
-            return false;
         }
 
         private bool IsHentai(string[] input)
@@ -159,6 +149,20 @@ namespace WaifuBot
             return false; 
         }
 
+        private bool IsSchedule(string[] input)
+        {
+            if (input[3].ToLower().Contains("!schedule")) return true;
+            
+            return false; 
+        }
+
+        private bool IsEvent(string[] input)
+        {
+            if (input[3].ToLower().Contains("!event")) return true;
+
+            return false; 
+        }
+
         private string Domo()
         {
             string[] domoResponse = { "Ara? Ohayou darin ", "Good morning ", "Hmmm! I don't like being called that! you know? " };
@@ -221,6 +225,48 @@ namespace WaifuBot
             return rules[0]; 
         }
 
+        private string Schedule(string input)
+        {
+            string[] confirmation = { "Got it!", "Okay honey, I'll save that.", "Done!" };
+            List<string> eventInfo = CommandHandler(input); 
+            Random answer = new Random();
+
+            try
+            {
+                dbinterface.insertEvent(eventInfo);
+                if(eventInfo.Count == 4)
+                    return confirmation[answer.Next(0, confirmation.Length - 1)] + string.Format("\n{0} is scheduled for {1} at {2}. An additional note is attached, it says: {3}", eventInfo[0][1], eventInfo[0][2], eventInfo[0][3], eventInfo[0][4]);  
+                else
+                    return confirmation[answer.Next(0, confirmation.Length - 1)] + string.Format("\n{0} is now scheduled for {1} at {2}. ", eventInfo[0], eventInfo[1], eventInfo[2]);  
+            }
+
+            catch(Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                return error(); 
+            }
+            
+        }
+
+        private string Event(string input)
+        {
+            try
+            {
+                List<BsonDocument> eventInfo = dbinterface.getEvent(CommandHandler(input)[0]).Result;
+                if(eventInfo.Count == 4) 
+                    return string.Format("{0} is scheduled for {1} at {2}. An additional note is attached, it says: {3}", eventInfo[0][1], eventInfo[0][2], eventInfo[0][3], eventInfo[0][4]); 
+                else
+                    return string.Format("{0} is scheduled for {1} at {2}.", eventInfo[0][1], eventInfo[0][2], eventInfo[0][3]); 
+            }
+
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                return error(); 
+            }
+
+        }
+
         private string GetNick(string input)
         {
 
@@ -229,6 +275,36 @@ namespace WaifuBot
             if (index >= 0) return input.Substring(1, index - 1);
 
             return null;
+        }
+
+        private List<string> CommandHandler(string input)
+        {
+            string[] commands = { "!calm", "!rules", "!schedule", "!event" };
+            List<string> commandInfo = new List<string>();
+            string commandMessage = null; 
+            string[] splitCommandMessage;
+
+            foreach(string command in commands)
+            {
+                if(input.ToLower().Contains(command))
+                {
+                    commandMessage = input.Substring(input.ToLower().IndexOf(command) + command.Length); 
+                    break; 
+                }
+            }
+
+            splitCommandMessage = commandMessage.Split(new string[] {" , "}, StringSplitOptions.RemoveEmptyEntries); 
+            foreach(string command in splitCommandMessage) commandInfo.Add(command);
+            Console.WriteLine(commandInfo); 
+            return commandInfo; 
+        }
+
+        private string error()
+        {
+            string[] error = { "Ara? Something doesn't seem to be right... Try again later.", "Something's wrong honey, try again later, ok?", "That didn't seem to work, can you try again later?", "Darin, that's weird, that didn't seem to work. Canyou try again later?" };
+            Random answer = new Random();
+
+            return error[answer.Next(0, error.Length - 1)]; 
         }
 
     }

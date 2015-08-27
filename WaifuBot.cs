@@ -14,7 +14,7 @@ namespace WaifuBot
         public static string SERVER = "irc.freenode.net"; //Server to use
         private static int PORT = 6667; //Default port
         private static string USER = "USER WaifuBot 0 * :Rin Tohsaka";  //Something something standard 
-        private static string NICK = "WaifuBot"; //Nick
+        private static string NICK = "TestoBoto"; //Nick
         //public static string CHANNEL = "#/r/OreGairuSNAFU"; //Channel
         public static string CONTROL = "\u0001";  
         public static string CHANNEL = "#oregairusnafu2";
@@ -29,6 +29,7 @@ namespace WaifuBot
             string[] splitInput;
             ChatHandler handler = new ChatHandler();
             string response;
+            PingSender pingSender = new PingSender();
 
             try
             {
@@ -43,6 +44,7 @@ namespace WaifuBot
                 writer.Flush();
                 writer.WriteLine("JOIN " + CHANNEL);
                 writer.Flush();
+                pingSender.Start(); 
 
                 while(true)
                 {
@@ -51,14 +53,14 @@ namespace WaifuBot
                         Console.WriteLine(inputLine);
                         splitInput = inputLine.Split(new Char[] { ' ' });
 
-                        if (inputLine.Substring(0, 4) == "PING")
-                        {
-                            string PongReply = inputLine.Substring(6); 
-                            //Console.WriteLine("->PONG " + PongReply);
-                            writer.WriteLine("PONG " + PongReply);
-                            writer.Flush();
-                            continue; 
-                        }
+                        //if (inputLine.Substring(0, 4) == "PING")
+                        //{
+                        //    string PongReply = inputLine.Substring(6); 
+                        //    //Console.WriteLine("->PONG " + PongReply);
+                        //    writer.WriteLine("PONG " + PongReply);
+                        //    writer.Flush();
+                        //    continue; 
+                        //}
 
                         response = handler.Response(inputLine);
                         if (response != null)

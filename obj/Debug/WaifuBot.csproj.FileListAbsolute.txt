@@ -4,3 +4,12 @@ c:\users\daniel\documents\visual studio 2013\Projects\WaifuBot\WaifuBot\bin\Debu
 c:\users\daniel\documents\visual studio 2013\Projects\WaifuBot\WaifuBot\obj\Debug\WaifuBot.csprojResolveAssemblyReference.cache
 c:\users\daniel\documents\visual studio 2013\Projects\WaifuBot\WaifuBot\obj\Debug\WaifuBot.exe
 c:\users\daniel\documents\visual studio 2013\Projects\WaifuBot\WaifuBot\obj\Debug\WaifuBot.pdb
+C:\Users\Daniel\documents\visual studio 2013\Projects\WaifuBot\WaifuBot\bin\Debug\MongoDB.Bson.dll
+C:\Users\Daniel\documents\visual studio 2013\Projects\WaifuBot\WaifuBot\bin\Debug\MongoDB.Driver.Core.dll
+C:\Users\Daniel\documents\visual studio 2013\Projects\WaifuBot\WaifuBot\bin\Debug\MongoDB.Driver.dll
+C:\Users\Daniel\documents\visual studio 2013\Projects\WaifuBot\WaifuBot\bin\Debug\MongoDB.Bson.pdb
+C:\Users\Daniel\documents\visual studio 2013\Projects\WaifuBot\WaifuBot\bin\Debug\MongoDB.Bson.xml
+C:\Users\Daniel\documents\visual studio 2013\Projects\WaifuBot\WaifuBot\bin\Debug\MongoDB.Driver.pdb
+C:\Users\Daniel\documents\visual studio 2013\Projects\WaifuBot\WaifuBot\bin\Debug\MongoDB.Driver.xml
+C:\Users\Daniel\documents\visual studio 2013\Projects\WaifuBot\WaifuBot\bin\Debug\MongoDB.Driver.Core.pdb
+C:\Users\Daniel\documents\visual studio 2013\Projects\WaifuBot\WaifuBot\bin\Debug\MongoDB.Driver.Core.xml

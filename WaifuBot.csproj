@@ -51,6 +51,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChatHandler.cs" />
+    <Compile Include="DBInterface.cs" />
+    <Compile Include="PingSender.cs" />
     <Compile Include="WaifuBot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
