@@ -14,9 +14,10 @@ namespace WaifuBot
         public static string SERVER = "irc.freenode.net"; //Server to use
         private static int PORT = 6667; //Default port
         private static string USER = "USER BestGirl 0 * :Rin Tohsaka";  //Something something standard 
-        private static string NICK = "WaifuBot"; //Nick
+        public static string NICK = "WaifuBot"; //Nick
+        //public static string NICK = "TestoBoto";
         public static string CHANNEL = "#/r/OreGairuSNAFU"; //Channel
-        public static string CONTROL = "\u0001";  
+        public static string CONTROL = "\x01";  
         //public static string CHANNEL = "#oregairusnafu2";
         public static StreamWriter writer;
 
@@ -65,7 +66,15 @@ namespace WaifuBot
                         response = handler.Response(inputLine);
                         if (response != null)
                         {
-                            if (response.Contains("\n"))
+
+                            if (response.StartsWith("PRIVTO "))
+                            {
+                                string nickname = response.Substring(7, response.IndexOf(": ") - 7);
+                                string message = response.Substring(response.IndexOf(": ") + 2); 
+                                writer.WriteLine(string.Format("PRIVMSG {0} :{1}", nickname , message));
+                                writer.Flush();
+                            }
+                            else if (response.Contains("\n"))
                             {
                                 string[] multiLineResponse = response.Split(new Char[] { '\n' });
 
@@ -73,16 +82,6 @@ namespace WaifuBot
                                 {
                                     if (message.Contains("/me"))
                                     {
-                                        //writer.WriteLine("PRIVMSG " + CHANNEL + " :" + CONTROL + "ACTION " + message.Remove(0, 3) + CONTROL);
-                                        //Console.WriteLine("PRIVMSG " + CHANNEL + " :" + CONTROL + "ACTION " + "1" + message.Remove(0, 3) + CONTROL);
-                                        //writer.Flush(); 
-                                        //writer.WriteLine("PRIVMSG " + CHANNEL + " :" + "\u0001" + "ACTION " + message.Remove(0, 3) + "\u0001");
-                                        //Console.WriteLine("PRIVMSG " + CHANNEL + " :" + "\u0001" + "ACTION " + "2" + message.Remove(0, 3) + "\u0001"); 
-                                        //writer.Flush();
-                                        //writer.Write(string.Format("PRIVMSG {0} :{1} ACTION {2}{1}", CHANNEL, CONTROL, message.Remove(0,3))); 
-                                        //Console.WriteLine(string.Format("PRIVMSG {0} :{1} ACTION 3 {2}{1}", CHANNEL, CONTROL, message.Remove(0,3))); 
-                                        ////writer.WriteLine("PRIVMSG #oregairusnafu2 :\001ACTION waves\001"); 
-                                        //writer.Flush();
                                     }
                                     else
                                     {
@@ -110,7 +109,7 @@ namespace WaifuBot
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
-                Thread.Sleep(5000);
+                Thread.Sleep(15000);
                 string[] argv = { };
                 Main(argv);
             }

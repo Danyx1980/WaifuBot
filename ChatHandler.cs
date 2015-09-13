@@ -20,8 +20,13 @@ namespace WaifuBot
 
                 if(input[1] == "JOIN")
                 {
-                    if (input[0].Contains("WaifuBot")) return SelfJoin();
-                    else return UserJoin();
+                    if (input[0].Contains(WaifuBot.NICK)) return SelfJoin();
+                     
+                    else
+                    {
+                        dbinterface.inserLogIn(JoinParser(message));
+                        return UserJoin();
+                    }
                 }
 
                 if (input[1] == "PRIVMSG")
@@ -35,7 +40,9 @@ namespace WaifuBot
                     if (IsAyy(input)) return Lmao();
                     if (IsRules(message)) return Rules();
                     if (IsSchedule(input)) return Schedule(message);
-                    if (IsEvent(input)) return Event(message); 
+                    if (IsEvent(input)) return Event(message);
+                    if (IsLastSeen(input)) return LastSeen(input[4]);
+                    if (IsFullInfo(input)) return FullInfo(input[4]); 
                 }
                 //if (IsPoi(input)) return poiCounter.ToString(); 
             
@@ -47,7 +54,6 @@ namespace WaifuBot
             string[] selfJoinResponse = { "Ara?", "Tadaima", "I'm back!", "Darin! I'm back!" };
             Random answer = new Random();
 
-            //return selfJoinResponse[answer.Next(0, selfJoinResponse.Length)];
             return selfJoinResponse[answer.Next(0, selfJoinResponse.Length)];
         }
 
@@ -73,7 +79,8 @@ namespace WaifuBot
         {
             foreach (string substring in input)
             {
-                if (substring.ToLower().Contains("hentai")) return true;
+                if(substring != nickname)
+                    if (substring.ToLower().Contains("hentai") && !substring.ToLower().Contains("http")) return true;
             }
 
             return false;
@@ -85,7 +92,7 @@ namespace WaifuBot
             
             foreach(string salutes in possibleSalutes)
             {
-                if (input.ToLower().Contains(salutes) && input.ToLower().Contains("waifubot")) return true; 
+                if (input.ToLower().Contains(salutes) && input.ToLower().Contains(WaifuBot.NICK)) return true; 
             }
 
             return false; 
@@ -97,7 +104,7 @@ namespace WaifuBot
 
             foreach (string hate in possibleHate)
             {
-                if (input.ToLower().Contains(hate) && input.ToLower().Contains("waifubot")) return true;
+                if (input.ToLower().Contains(hate) && input.ToLower().Contains(WaifuBot.NICK)) return true;
             }
 
             return false; 
@@ -109,7 +116,7 @@ namespace WaifuBot
 
             foreach (string love in possibleLove)
             {
-                if (input.ToLower().Contains(love) && input.ToLower().Contains("waifubot")) return true;
+                if (input.ToLower().Contains(love) && input.ToLower().Contains(WaifuBot.NICK)) return true;
             }
 
             return false; 
@@ -130,7 +137,7 @@ namespace WaifuBot
 
         private bool IsAyy(string[] input)
         {
-            if (input[3].ToLower().Contains("ayy") && input.Length == 4) return true;
+            if (input[3].ToLower().StartsWith(":ayy") && input.Length == 4) return true;
 
             return false; 
         }
@@ -163,6 +170,20 @@ namespace WaifuBot
             return false; 
         }
 
+        private bool IsLastSeen(string[] input)
+        {
+            if (input[3].ToLower().Contains("!lastseen")) return true; 
+
+            return false; 
+        }
+
+        private bool IsFullInfo(string[] input)
+        {
+            if (input[3].ToLower().Contains("!fullinfo")) return true;
+
+            return false; 
+        }
+
         private string Domo()
         {
             string[] domoResponse = { "Ara? Ohayou darin ", "Good morning ", "Hmmm! I don't like being called that! you know? " };
@@ -182,6 +203,7 @@ namespace WaifuBot
             else if (nickname.Contains("Rumi") && answer.Next(0, 10) == 3) return "Wow Rumi-chan, you're so mean :("; 
             else if(answer.Next(0, 999) == 337) return ("It's ok, I still love you " + nickname + "-san");
 
+            return hateResponses[1]; 
             return (hateResponses[answer.Next(0, hateResponses.Length - 1)] + nickname + "-san"); 
 
         }
@@ -252,23 +274,12 @@ namespace WaifuBot
             try
             {
                 List<BsonDocument> eventInfo = dbinterface.getEvent(CommandHandler(input)[0]).Result;
-                //List<string> fullAnswer = new List<string>;   
-                //string answer;
-
-                //for (int i = 0; i < eventInfo.Count; i++ )
-                //{
-                //    if(eventInfo[i].Count() == 3) 
-                //        fullAnswer.Add(string.Format("{0} is scheduled for {1} at {2}.\n", eventInfo[i][1], eventInfo[i][2], eventInfo[i][3])); 
-                
-                //    if(eventInfo[i].Count() == 4)   
-                //        fullAnswer.Add(string.Format("{0} is scheduled for {1} at {2}. An additional note is attached, it says: {3}.\n", eventInfo[0][1], eventInfo[0][2], eventInfo[0][3], eventInfo[0][4])); 
-                //}
 
                 if(eventInfo[0].Count() == 4)
-                    return string.Format("{0} is scheduled for {1} at {2}.\n", eventInfo[0][1], eventInfo[0][2], eventInfo[0][3]); 
+                    return string.Format("{0} is scheduled for {1} at {2}.\n", eventInfo.Last()[1], eventInfo.Last()[2], eventInfo.Last()[3]); 
 
                 else
-                    return string.Format("{0} is scheduled for {1} at {2}. An additional note is attached, it says: {3}.\n", eventInfo[0][1], eventInfo[0][2], eventInfo[0][3], eventInfo[0][4]); 
+                    return string.Format("{0} is scheduled for {1} at {2}. An additional note is attached, it says: {3}.\n", eventInfo.Last()[1], eventInfo.Last()[2], eventInfo.Last()[3], eventInfo.Last()[4]); 
                 
             }
 
@@ -288,6 +299,37 @@ namespace WaifuBot
             if (index >= 0) return input.Substring(1, index - 1);
 
             return null;
+        }
+
+        private string LastSeen(string input)
+        {
+            try
+            {
+                List<BsonDocument> lastSeen = dbinterface.getLastSeen(input).Result;
+
+                return string.Format("{0} last connected on {1} at {2}", lastSeen.Last()[4], lastSeen.Last()[1], lastSeen.Last()[2]);
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                return error(); 
+            }
+        }
+
+        private string FullInfo(string input)
+        {
+            try
+            {
+                List<BsonDocument> lastSeen = dbinterface.getLastSeen(input).Result;
+
+
+                return string.Format("PRIVTO {4}: {0} last connected on {1} at {2} from {3}", lastSeen.Last()[4], lastSeen.Last()[1], lastSeen.Last()[2], lastSeen.Last()[3], nickname);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                return null; 
+            }
         }
 
         private List<string> CommandHandler(string input)
@@ -310,6 +352,18 @@ namespace WaifuBot
             foreach(string command in splitCommandMessage) commandInfo.Add(command);
             Console.WriteLine(commandInfo); 
             return commandInfo; 
+        }
+
+        private List<string> JoinParser(string input)
+        {
+            List<string> joinInfo = new List<string>();
+
+            joinInfo.Add(DateTime.Now.Date.ToString().Substring(0, 10));
+            joinInfo.Add(DateTime.Now.TimeOfDay.ToString().Substring(0, 8));
+            joinInfo.Add(input.Substring(input.IndexOf("ip.") + 3, input.Length - input.IndexOf(" JOIN") - 8));
+            joinInfo.Add(nickname); 
+
+            return joinInfo; 
         }
 
         private string error()

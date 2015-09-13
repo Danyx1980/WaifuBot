@@ -1,0 +1,8 @@
+-Date reminders
+-Log In Log
+-User info
+-!help command
+-!schedule and !event can start no matter where the command is
+-Personalized commands
+-Random answers on database 
+-Username pattern recognition 
