@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.IO;
 using System.Threading;
+using System.Collections.Generic; 
 using MongoDB.Bson;
 using MongoDB.Driver; 
 
@@ -19,18 +20,18 @@ namespace WaifuBot
         public static string CHANNEL = "#/r/OreGairuSNAFU"; //Channel
         public static string CONTROL = "\x01";  
         //public static string CHANNEL = "#oregairusnafu2";
-        public static StreamWriter writer;
+        public static NetworkStream stream;
 
         static void Main(string[] args)
         {
-            NetworkStream stream;
             TcpClient irc;
             string inputLine;
+            StreamWriter writer;
             StreamReader reader;
             string[] splitInput;
             ChatHandler handler = new ChatHandler();
-            string response;
-            PingSender pingSender = new PingSender();
+            PingSender pingSender;
+            List<string> response;
 
             try
             {
@@ -39,6 +40,7 @@ namespace WaifuBot
                 stream = irc.GetStream();
                 reader = new StreamReader(stream);
                 writer = new StreamWriter(stream);
+                pingSender = new PingSender();
                 writer.WriteLine("NICK " + NICK);
                 writer.Flush();
                 writer.WriteLine(USER);
@@ -51,32 +53,18 @@ namespace WaifuBot
                 {
                     while((inputLine = reader.ReadLine()) != null)
                     {
-                        Console.WriteLine(inputLine);
                         splitInput = inputLine.Split(new Char[] { ' ' });
-
-                        //if (inputLine.Substring(0, 4) == "PING")
-                        //{
-                        //    string PongReply = inputLine.Substring(6); 
-                        //    //Console.WriteLine("->PONG " + PongReply);
-                        //    writer.WriteLine("PONG " + PongReply);
-                        //    writer.Flush();
-                        //    continue; 
-                        //}
+                        
+                        if(splitInput[0] != "PONG")
+                            Console.WriteLine(inputLine);
 
                         response = handler.Response(inputLine);
                         if (response != null)
                         {
-
-                            if (response.StartsWith("PRIVTO "))
+                           
+                            if (response[1].Contains("\n"))
                             {
-                                string nickname = response.Substring(7, response.IndexOf(": ") - 7);
-                                string message = response.Substring(response.IndexOf(": ") + 2); 
-                                writer.WriteLine(string.Format("PRIVMSG {0} :{1}", nickname , message));
-                                writer.Flush();
-                            }
-                            else if (response.Contains("\n"))
-                            {
-                                string[] multiLineResponse = response.Split(new Char[] { '\n' });
+                                string[] multiLineResponse = response[1].Split(new Char[] { '\n' });
 
                                 foreach (string message in multiLineResponse)
                                 {
@@ -85,20 +73,20 @@ namespace WaifuBot
                                     }
                                     else
                                     {
-                                        writer.WriteLine(string.Format("PRIVMSG {0} :{1}", CHANNEL, message));
+                                        writer.WriteLine(string.Format("PRIVMSG {0} :{1}", response[0], message));
                                         writer.Flush();
                                     }
                                 }
                             }
 
-                            else if(response.Contains("/me"))
+                            else if(response[1].Contains("/me"))
                             {
                                 //writer.WriteLine(string.Format("PRIVMSG {0} \x01ACACTION {1}\x01AC"), CHANNEL, response);
                                 //writer.Flush(); 
                             }
                             else
                             {
-                                writer.WriteLine(string.Format("PRIVMSG {0} :{1}", CHANNEL, response));
+                                writer.WriteLine(string.Format("PRIVMSG {0} :{1}", response[0], response[1]));
                                 writer.Flush();
                             }
                         }

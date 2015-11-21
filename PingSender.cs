@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO; 
 using System.Threading; 
 using System.Threading.Tasks;
+using System.Net; 
+using System.Net.Sockets; 
 
 namespace WaifuBot
 {
@@ -11,6 +14,8 @@ namespace WaifuBot
     {
         static string PING = "PING :";
         private Thread pingSender;
+        private static NetworkStream stream = WaifuBot.stream;
+        private StreamWriter writer = new StreamWriter(stream); 
         // Empty constructor makes instance of Thread
         public PingSender()
         {
@@ -26,8 +31,8 @@ namespace WaifuBot
         {
             while (true)
             {
-                WaifuBot.writer.WriteLine(PING + WaifuBot.SERVER);
-                WaifuBot.writer.Flush();
+                writer.WriteLine(PING + WaifuBot.SERVER);
+                writer.Flush();
                 Thread.Sleep(15000);
             }
         }

@@ -20,6 +20,7 @@ namespace WaifuBot
 
         protected static string eventCollection = "Events";
         protected static string logInCollection = "LogIn";
+        protected static string logOffCollection = "LogOff"; 
         protected static string userCollection = "Users"; 
 
         public async void insertEvent(List<string> eventInfo)
@@ -81,7 +82,31 @@ namespace WaifuBot
             var filter = Builders<BsonDocument>.Filter.Eq("ID", user.ToLower());
             List<BsonDocument> result = await collection.Find(filter).ToListAsync();
 
+            return result.ToList();  
+        }
+
+        public async void inserLogOut(List<string> LogInfo)
+        {
+            var toInsert = new BsonDocument
+            {
+                {"Date", LogInfo[0]}, 
+                {"Hour", LogInfo[1]}, 
+                {"User", LogInfo[2]}, 
+                {"ID", LogInfo[2].ToLower()}
+            };
+
+            var collection = waifuBotDatabase.GetCollection<BsonDocument>(logOffCollection);
+            await collection.InsertOneAsync(toInsert); 
+        }
+
+        public async Task<List<BsonDocument>> getLogOut (string user)
+        {
+            var collection = waifuBotDatabase.GetCollection<BsonDocument>(logOffCollection);
+            var filter = Builders<BsonDocument>.Filter.Eq("ID", user.ToLower());
+            List<BsonDocument> result = await collection.Find(filter).ToListAsync();
+
             return result.ToList(); 
         }
+
     }
 }
